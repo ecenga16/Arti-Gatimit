@@ -1,7 +1,6 @@
 import * as model from './model';
 import recipeView from './views/recipeView';
-
-const recipeContainer = document.querySelector('.recipe');
+import searchView from './views/searchView';
 
 const controlRecipes = async function() {
   try {
@@ -13,8 +12,32 @@ const controlRecipes = async function() {
     await model.loadRecipe(id);
     recipeView.render(model.state.recipe);
   } catch(err) {
-    alert(err.message);
+    recipeView.renderError();
   }
 };
 
-['hashchange', 'load'].forEach(e => window.addEventListener(e, controlRecipes));
+const controllSearchResults = async function () {
+
+  
+  try { 
+
+    const query = searchView.getQuery();
+    if(!query) return;
+
+    await model.loadSearchResults(query);
+    console.log(model.state.search.results);
+
+  } catch (err) {
+
+  }
+}
+
+
+
+const init = function () { 
+
+  recipeView.addHandlerRender(controlRecipes);
+  searchView.addHandlerSearch(controllSearchResults);
+}
+
+init();
